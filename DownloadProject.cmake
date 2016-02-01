@@ -71,6 +71,7 @@ set(_DownloadProjectDir "${CMAKE_CURRENT_LIST_DIR}")
 include(CMakeParseArguments)
 
 function(download_project)
+    set(EXTERN_DIR "${CMAKE_BINARY_DIR}/external_proj")
 
     set(options QUIET)
     set(oneValueArgs
@@ -97,10 +98,10 @@ function(download_project)
 
     # Ensure the caller can know where to find the source and build directories
     if (NOT DL_ARGS_SOURCE_DIR)
-        set(DL_ARGS_SOURCE_DIR "${CMAKE_BINARY_DIR}/${DL_ARGS_PROJ}-src")
+        set(DL_ARGS_SOURCE_DIR "${EXTERN_DIR}/${DL_ARGS_PROJ}-src")
     endif()
     if (NOT DL_ARGS_BINARY_DIR)
-        set(DL_ARGS_BINARY_DIR "${CMAKE_BINARY_DIR}/${DL_ARGS_PROJ}-build")
+        set(DL_ARGS_BINARY_DIR "${EXTERN_DIR}/${DL_ARGS_PROJ}-build")
     endif()
     set(${DL_ARGS_PROJ}_SOURCE_DIR "${DL_ARGS_SOURCE_DIR}" PARENT_SCOPE)
     set(${DL_ARGS_PROJ}_BINARY_DIR "${DL_ARGS_BINARY_DIR}" PARENT_SCOPE)
@@ -109,14 +110,14 @@ function(download_project)
     # If we've already previously done these steps, they will not cause
     # anything to be updated, so extra rebuilds of the project won't occur.
     configure_file("${_DownloadProjectDir}/DownloadProject.CMakeLists.cmake.in"
-                   ${DL_ARGS_PROJ}-download/CMakeLists.txt)
+                   ${EXTERN_DIR}/${DL_ARGS_PROJ}-download/CMakeLists.txt)
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
                     ${OUTPUT_QUIET}
-                    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/${DL_ARGS_PROJ}-download"
+                    WORKING_DIRECTORY "${EXTERN_DIR}/${DL_ARGS_PROJ}-download"
     )
     execute_process(COMMAND ${CMAKE_COMMAND} --build .
                     ${OUTPUT_QUIET}
-                    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/${DL_ARGS_PROJ}-download"
+                    WORKING_DIRECTORY "${EXTERN_DIR}/${DL_ARGS_PROJ}-download"
     )
 
 endfunction()
